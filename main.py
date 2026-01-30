@@ -1,9 +1,10 @@
-from app.tools.retrieval import retrieve_context
+from app.tools.retrieval import AttackPatternsTool
 from pprint import pprint
 
 
 def main():
-    pprint(retrieve_context("download malware"))
+    tool = AttackPatternsTool()
+    pprint(tool.retrieve_context("download malware"))
 
 
 if __name__ == "__main__":
