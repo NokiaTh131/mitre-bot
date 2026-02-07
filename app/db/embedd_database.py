@@ -1,10 +1,10 @@
 import json
 from typing import List
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 from app.db.config import CONFIG
 from app.db.chroma import initialize_vector_store, index_documents
+from langchain_ollama import OllamaEmbeddings
 
 
 def load_attack_patterns(file_path: str) -> List[Document]:
@@ -14,7 +14,7 @@ def load_attack_patterns(file_path: str) -> List[Document]:
 
     return [
         Document(
-            page_content=entry["description"],
+            page_content=entry.get("description", "") or "",
             metadata={
                 "id": entry["id"],
                 "name": entry["name"],
@@ -22,6 +22,7 @@ def load_attack_patterns(file_path: str) -> List[Document]:
             },
         )
         for entry in data
+        if entry.get("description")
     ]
 
 
@@ -35,12 +36,10 @@ def get_text_chunks(documents: List[Document]) -> List[Document]:
     return splitter.split_documents(documents)
 
 
-def get_embedding_model(task_type: str = "retrieval_document"):
+def get_embedding_model():
     """Initialize the Google Generative AI embedding model."""
-    return GoogleGenerativeAIEmbeddings(
-        model="models/text-embedding-004",
-        google_api_key=CONFIG["google_api_key"],
-        task_type=task_type,
+    return OllamaEmbeddings(
+        model="qwen3-embedding:4b",
     )
 
 

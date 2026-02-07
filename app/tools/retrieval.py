@@ -1,9 +1,8 @@
 from typing import List
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_ollama import OllamaEmbeddings
 from langchain_core.documents import Document
 from langchain_core.tools import StructuredTool
 from pydantic import BaseModel, Field
-from app.db.config import CONFIG
 from app.db.chroma import initialize_vector_store
 
 
@@ -21,10 +20,8 @@ class AttackPatternsTool:
 
     def get_vector_store(self):
         """Reconnect to the existing persisted ChromaDB."""
-        embeddings = GoogleGenerativeAIEmbeddings(
-            model="models/text-embedding-004",
-            google_api_key=CONFIG["google_api_key"],
-            task_type="retrieval_query",
+        embeddings = OllamaEmbeddings(
+            model="qwen3-embedding:4b",
         )
 
         return initialize_vector_store(embeddings)
